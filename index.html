@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="icon" href="" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>VirtualClap</title>
+  </head>
+  <style type="text/css">
+    body {
+      text-align: center;
+      background-color: #26b72b;
+    }
+  </style>
+  <body>
+    <noscript>You need to enable JavaScript to run this app.</noscript>    
+    <script>
+      
+      function beep(){
+        const audioCtx = new AudioContext()
+        const vol = 100;
+        const freq = 520;
+        const duration = 200;
+        const v = audioCtx.createOscillator()
+        const u = audioCtx.createGain()
+        v.connect(u)
+        v.frequency.value = freq
+        v.type = "square"
+        u.connect(audioCtx.destination)
+        u.gain.value = vol * 0.01
+        v.start(audioCtx.currentTime)
+        v.stop(audioCtx.currentTime + duration * 0.001)
+      }
+
+      function main() {
+        console.log("MAIN");
+      }
+
+      function clickOnButton() {
+        console.log("click");
+        beep();
+      }
+
+      window.onload = function() {
+        main();
+      }
+    </script>
+    <h1>VirtualClap</h1>
+    <input type="image" src="https://picsum.photos/200" onmousedown="clickOnButton()"/>
+    <aside>Instruction du gwak</aside>
+    <span>Résultat</span>
+  </body>
+</html>
