@@ -15,6 +15,64 @@
   <body>
     <noscript>You need to enable JavaScript to run this app.</noscript>    
     <script>
+
+      class VirtualClap {
+        constructor() {
+          this.configuration = {
+            initialState: "STOP",
+            STOP: {
+              transitions: {
+                CLICK: {
+                  target: 'SEND_SOUND',
+                  action: () => {
+                    setTimeout(onTimer, 1000);
+                  }
+                }
+              }
+            },
+            SEND_SOUND : {
+              transitions: {
+                TIMEOUT: {
+                  target: 'WAIT_ACK',
+                  action: () => {
+                    beep();
+                    console.log("SOUND");
+                    this.timestampOfSound = getTimestamp();
+                  }
+                }
+              }
+            },
+            WAIT_ACK : {
+              transitions: {
+                CLICK: {
+                  target: 'RESULT',
+                  action: () => {
+                    const delta = getTimestamp() - this.timestampOfSound;
+                    setResult(delta);
+                  }
+                }
+              }
+            },
+            RESULT : {
+              transitions: {
+                
+              }
+            }
+          }
+
+          this.currentState = this.configuration.initialState;
+          this.timestampOfSound = 0;
+        }
+
+        sendEvent(event) {
+          const transition = this.configuration[this.currentState].transitions[event];
+          transition.action();
+          this.currentState = transition.target;
+        }
+
+      }
+
+      const virtualClap = new VirtualClap();
       
       function beep(){
         const audioCtx = new AudioContext()
@@ -37,8 +95,19 @@
       }
 
       function clickOnButton() {
-        console.log("click");
-        beep();
+        virtualClap.sendEvent("CLICK");
+      }
+
+      function onTimer() {
+        virtualClap.sendEvent("TIMEOUT");
+      }
+
+      function getTimestamp() {
+        return new Date().getTime(); 
+      }
+
+      function setResult(delta) {
+        console.log(delta);
       }
 
       window.onload = function() {
