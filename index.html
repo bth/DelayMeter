@@ -55,7 +55,11 @@
             },
             RESULT : {
               transitions: {
-                
+                CLICK: {
+                  target: 'STOP',
+                  action: () => {
+                  }
+                }
               }
             }
           }
@@ -66,8 +70,10 @@
 
         sendEvent(event) {
           const transition = this.configuration[this.currentState].transitions[event];
-          transition.action();
-          this.currentState = transition.target;
+          if (transition) {
+            transition.action();
+            this.currentState = transition.target;
+          }
         }
 
       }
