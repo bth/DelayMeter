@@ -11,6 +11,9 @@
       text-align: center;
       background-color: #26b72b;
     }
+    input {
+      max-width: 100px;
+    }
   </style>
   <body>
     <noscript>You need to enable JavaScript to run this app.</noscript>    
@@ -96,10 +99,6 @@
         v.stop(audioCtx.currentTime + duration * 0.001)
       }
 
-      function main() {
-        console.log("MAIN");
-      }
-
       function clickOnButton() {
         virtualClap.sendEvent("CLICK");
       }
@@ -116,12 +115,20 @@
         console.log(delta);
       }
 
+      function main() {
+        console.log("MAIN");
+      }
+
       window.onload = function() {
         main();
       }
     </script>
     <h1>VirtualClap</h1>
-    <input type="image" src="https://picsum.photos/200" onmousedown="clickOnButton()"/>
+    <div id="button" onmousedown="clickOnButton()">
+      <input id="playButton" type="image" src="img/play.svg"/>
+      <input id="questionButton" type="image" src="img/sound.svg"/>
+      <input id="okButton" type="image" src="img/ok.svg"/>
+    </div>
     <aside>Instruction du gwak</aside>
     <span>Résultat</span>
   </body>
