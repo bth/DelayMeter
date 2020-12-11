@@ -12,7 +12,13 @@
       background-color: #26b72b;
     }
     input {
-      max-width: 100px;
+      border: solid black;
+      padding: 10px;
+      width: 100px;
+      height: 100px;
+    }
+    .hidden {
+      display: none;
     }
   </style>
   <body>
@@ -61,27 +67,33 @@
                 CLICK: {
                   target: 'STOP',
                   action: () => {
+                    setResult("");
                   }
                 }
               }
             }
           }
 
-          this.currentState = this.configuration.initialState;
+          this.setState(this.configuration.initialState);
           this.timestampOfSound = 0;
+        }
+
+        setState(state) {
+          this.currentState = state;
+          setButton(this.currentState);
         }
 
         sendEvent(event) {
           const transition = this.configuration[this.currentState].transitions[event];
           if (transition) {
             transition.action();
-            this.currentState = transition.target;
+            this.setState(transition.target);
           }
         }
 
       }
 
-      const virtualClap = new VirtualClap();
+      let virtualClap;
       
       function beep(){
         const audioCtx = new AudioContext()
@@ -112,11 +124,36 @@
       }
 
       function setResult(delta) {
-        console.log(delta);
+        const result = document.getElementById("result");
+        result.innerText = delta;
+      }
+
+      function setButton(state) {
+        console.log("state = " + state);
+        const playButton = document.getElementById("playButton");
+        const questionButton = document.getElementById("questionButton");
+        const okButton = document.getElementById("okButton");
+
+        const buttons = [playButton, questionButton, okButton];
+        buttons.map((button) => button.classList.add("hidden"));
+
+        const buttonToDisplay = {
+          "STOP": playButton,
+          "SEND_SOUND": questionButton,
+          "WAIT_ACK": questionButton,
+          "RESULT": okButton
+        };
+
+        display(buttonToDisplay[state]);
+      }
+
+      function display(button) {
+        button.classList.remove("hidden");
       }
 
       function main() {
         console.log("MAIN");
+        virtualClap = new VirtualClap();
       }
 
       window.onload = function() {
@@ -125,11 +162,19 @@
     </script>
     <h1>VirtualClap</h1>
     <div id="button" onmousedown="clickOnButton()">
-      <input id="playButton" type="image" src="img/play.svg"/>
-      <input id="questionButton" type="image" src="img/sound.svg"/>
-      <input id="okButton" type="image" src="img/ok.svg"/>
+      <div id="playButton" class="hidden">
+        <input type="image" src="img/play.svg"/>
+        <aside>Push to start the test</aside>
+      </div>
+      <div id="questionButton" class="hidden">
+        <input type="image" src="img/sound_question.svg"/>
+        <aside>Push when you hear a sound</aside>
+      </div>
+      <div id="okButton" class="hidden">
+        <input type="image" src="img/ok.svg"/>
+        <aside>Delay (ms):</aside>
+      </div>
     </div>
-    <aside>Instruction du gwak</aside>
-    <span>Résultat</span>
+    <span id="result"></span>
   </body>
 </html>
